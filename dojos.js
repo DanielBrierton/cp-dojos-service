@@ -63,6 +63,7 @@ module.exports = function (options) {
   seneca.add({role: plugin, cmd: 'my_dojos'}, cmd_my_dojos);
   seneca.add({role: plugin, cmd: 'dojos_count'}, cmd_dojos_count);
   seneca.add({role: plugin, cmd: 'dojos_by_country'}, cmd_dojos_by_country);
+  seneca.add({role: plugin, cmd: 'dojos_by_dojo_ids'}, cmd_dojos_by_dojo_ids);
   seneca.add({role: plugin, cmd: 'dojos_state_count'}, cmd_dojos_state_count);
   seneca.add({role: plugin, cmd: 'bulk_update'}, cmd_bulk_update);
   seneca.add({role: plugin, cmd: 'bulk_delete'}, cmd_bulk_delete);
@@ -624,6 +625,30 @@ module.exports = function (options) {
       });
       return done(null, dojosByCountry);
     });
+  }
+
+  function cmd_dojos_by_dojo_ids (args, done) {
+    var seneca = this;
+    var entity = seneca.make('cd_dojos');
+    args = args || {};
+    var dojoIds = args.dojo_id || null;
+    if (dojoIds) {
+      entity.native$(function (err, client) {
+        if (err) {
+          console.error('error executing query', err);
+        }
+        var query = "SELECT * FROM cd_dojos WHERE id IN ('" + dojoIds.join("','") + "')";
+        client.query(query, [], function (err, results) {
+          if (err) {
+            console.error('error executing query', err);
+          }
+          client.end();
+          done(null, results.rows);
+        });
+      });
+    } else {
+      done(null, []);
+    }
   }
 
   function cmd_load (args, done) {
