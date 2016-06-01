@@ -297,7 +297,7 @@ module.exports = function (options) {
               return done(err);
             }
 
-            var locality = args.locality || 'en_US';
+            var locality = dojo.locality || 'en_US';
             var code = 'google-email-pass-';
 
             // send dojo creator an email with dojo's newly created email address and it's temp password
@@ -762,7 +762,7 @@ module.exports = function (options) {
         };
         var sendTo = options.shared.botEmail;
         var respondTo = user.email || sendTo;
-        var payload = {to: sendTo, code: 'new-dojo-', locality: 'en_US', content: content, from: sendTo, replyTo: respondTo, subject: 'A new dojo has been created !'};
+        var payload = {to: sendTo, code: 'new-dojo-', locality: dojo.locality || 'en_US', content: content, from: sendTo, replyTo: respondTo, subject: 'A new dojo has been created !'};
 
         seneca.act({role: plugin, cmd: 'send_email', payload: payload}, function (err, res) {
           if (err) {
@@ -1466,7 +1466,7 @@ module.exports = function (options) {
         year: moment(new Date()).format('YYYY')
       };
 
-      var locality = args.locality || 'en_US';
+      var locality = dojo.locality || 'en_US';
       var code = 'invite-user-';
 
       var payload = {to: inviteEmail, code: code, locality: locality, from: dojo.name + ' <' + options.shared.botEmail + '>', replyTo: dojo.email, content: content, subject: emailSubject};
@@ -1618,7 +1618,7 @@ module.exports = function (options) {
         userType: userType
       };
 
-      var locality = args.locality || 'en_US';
+      var locality = dojo.locality || 'en_US';
       var code = 'user-request-to-join-';
 
       if (!dojo.email) return done(new Error('This Dojo has no email setup.'));
@@ -1938,7 +1938,7 @@ module.exports = function (options) {
         dojoName: dojo.name
       };
 
-      var locality = args.locality || 'en_US';
+      var locality = dojo.locality || 'en_US';
       var code = 'user-left-dojo-';
 
       var payload = {to: champion.email, code: code, locality: locality, content: content, subject: emailSubject};
@@ -2255,7 +2255,7 @@ module.exports = function (options) {
             moment(startDate).format('HH:mm') + ' - ' +
             moment(endDate).format('HH:mm');
         }
-        var locality = args.locality || 'en_US';
+        var locality = dojo.locality || 'en_US';
         emailSubject = emailSubject + ' ' + dojo.name;
 
         _.forEach(users, function (user) {

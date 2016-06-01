@@ -500,55 +500,6 @@ lab.experiment('Dojo Microservice test', function () {
     });
   });
 
-  lab.experiment('Dojos by dojo_ids', function () {
-    var clientStub, expectedDojos;
-    lab.before(function (done) {
-      // ARRANGE
-      expectedDojos = [{
-        id: 'id1',
-        name: 'Test Dojo 1'
-      }, {
-        id: 'id2',
-        name: 'Test Dojo 2'
-      }];
-      clientStub = {
-        query: function (query, params, callback) {
-          callback(null, { rows: expectedDojos });
-        },
-        end: function () {}
-      };
-      sinon.spy(clientStub, 'query');
-      sinon.spy(clientStub, 'end');
-      sinon.stub(seneca, 'make', function () {
-        return {
-          native$: function (callback) {
-            callback(null, clientStub);
-          }
-        }
-      });
-      done();
-    });
-
-    lab.test('list dojos by dojo_ids', function (done) {
-      // ACT
-      seneca.act({'role': role, cmd: 'dojos_by_dojo_ids', dojo_id: ['id1', 'id2']}, function (err, dojos) {
-        if (err) return done(err);
-
-        // ASSERT
-        expect(dojos).to.deep.equal(expectedDojos);
-        expect(clientStub.query.getCall(0).calledWithMatch("SELECT * FROM cd_dojos WHERE id IN ('id1','id2')", [])).to.equal(true);
-        expect(clientStub.end.calledOnce).to.equal(true);
-        done();
-      });
-    });
-
-    lab.after(function (done) {
-      // CLEANUP
-      seneca.make.restore();
-      done();
-    });
-  });
-
   lab.experiment('Dojos state count', function () {
     lab.test.skip('list dojos by states in country', function (done) {
       seneca.util.recurse(2, function (index, next) {
